@@ -203,3 +203,28 @@ Or we can do it with configuration files (ofc)
 `kubectl apply -f mysql-configmap.yaml --namespace=my-namespace` - creates a configmap in a namespace
 
 Or you can specify it in a config map: `metadata-> namespace: my-namespace`
+
+
+## Ingress
+
+External service VS ingress: Ingress will redirect the request to the internal service and the service to the pod.
+
+We need an implementation for Ingeress. Which is Ingress Controller. Ingress Controller is a pod.
+It's
+    - evaluates all the rules
+    - manages redirections
+    - entrypoint to cluster
+    - note: there are many third-party implementations. K8s implementation: Nginx Ingress Controller
+
+You'll need something that opens the connection to the cluster. It is tipically a Proxy Server. All the requests get to the proxy server and it forwards the requests to the cluster. It is the only publicly available component of the architecture.
+
+
+
+configuration:
+    - host is a valid domain name that is mapped to the internal port
+
+
+Setup: https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/
+
+`minikube addons enable ingress` - install ingress controller in Minikube
+`kubectl get pods -n ingress-nginx` - get controller pod
