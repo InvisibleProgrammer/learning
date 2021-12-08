@@ -1,0 +1,12 @@
+### List all todos
+GET http://localhost:8080/todos
+
+### Add todo
+POST http://localhost:8080/todos
+
+{
+    "id": 2,
+    "title": "First todo",
+    "description": "Nice, fancy description because we can add it"
+}
+
