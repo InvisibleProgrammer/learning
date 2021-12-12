@@ -1,33 +1,102 @@
 package main
 
 import (
+	"context"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 )
 
-type todo struct {
+type CreateTodoRequest struct {
+	Title       string
+	Description string
+}
+
+type TodoResponse struct {
 	Id          int
 	Title       string
 	Description string
+	RecordedAt  time.Time
 	Completed   bool
 }
 
-var todos = []todo{}
+type TodoDao struct {
+	Id          int
+	UserId      int
+	Title       string
+	Description string
+	RecordedAt  time.Time
+	Completed   bool
+}
+
+var connectionString string = os.Getenv("conn")
 
 func getTodos(c *gin.Context) {
+	conn, err := pgx.Connect(context.Background(), connectionString)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	defer conn.Close(context.Background())
+
+	rows, err := conn.Query(context.Background(), "select Id, Title, Description, RecordedAt, Completed from Todos")
+
+	if err != nil {
+
+		c.IndentedJSON(http.StatusInternalServerError, err)
+	}
+
+	defer rows.Close()
+
+	var todos []TodoResponse
+	for rows.Next() {
+		var t TodoResponse
+		err := rows.Scan(&t.Id, &t.Title, &t.Description, &t.RecordedAt, &t.Completed)
+
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, err)
+		}
+
+		todos = append(todos, t)
+	}
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err)
+		return
+	}
+
 	c.IndentedJSON(http.StatusOK, todos)
 }
 
 func addTodo(c *gin.Context) {
-	var newTodo todo
+	var newTodo CreateTodoRequest
 
 	if err := c.BindJSON(&newTodo); err != nil {
 		return
 	}
 
-	todos = append(todos, newTodo)
-	c.IndentedJSON(http.StatusCreated, newTodo)
+	conn, err := pgx.Connect(context.Background(), connectionString)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	defer conn.Close(context.Background())
+
+	_, err = conn.Exec(context.Background(), "insert into Todos(UserId, Title, Description) values($1, $2, $3)", 1, newTodo.Title, newTodo.Description)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Status(http.StatusCreated)
 }
 
 func main() {
