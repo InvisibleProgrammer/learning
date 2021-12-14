@@ -36,7 +36,7 @@ type TodoDao struct {
 	Completed   bool
 }
 
-var connectionString string = os.Getenv("conn")
+var connectionString string = os.Getenv("CONN")
 
 func getTodos(c *gin.Context) {
 	conn, err := pgx.Connect(context.Background(), connectionString)
@@ -75,6 +75,11 @@ func getTodos(c *gin.Context) {
 		return
 	}
 
+	if todos == nil {
+		c.IndentedJSON(http.StatusOK, []TodoResponse{})
+		return
+	}
+
 	c.IndentedJSON(http.StatusOK, todos)
 }
 
@@ -104,8 +109,23 @@ func addTodo(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
+type HealthCheckResponse struct {
+	Service  bool
+	Database bool
+}
+
 func healthCheck(c *gin.Context) {
-	c.String(http.StatusOK, "OK")
+
+	resposne := HealthCheckResponse{
+		Service: true,
+	}
+
+	_, err := pgx.Connect(context.Background(), connectionString)
+	if err == nil {
+		resposne.Database = true
+	}
+
+	c.IndentedJSON(http.StatusOK, resposne)
 
 	return
 }
