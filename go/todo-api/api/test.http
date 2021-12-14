@@ -1,3 +1,7 @@
+### Health check
+GET http://localhost:8080/diag/health
+
+
 ### List all todos
 GET http://localhost:8080/todos
 

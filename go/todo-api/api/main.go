@@ -10,6 +10,10 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+type ErrorResponse struct {
+	Message string
+}
+
 type CreateTodoRequest struct {
 	Title       string
 	Description string
@@ -38,7 +42,7 @@ func getTodos(c *gin.Context) {
 	conn, err := pgx.Connect(context.Background(), connectionString)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, err)
+		c.IndentedJSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 		return
 	}
 
@@ -47,8 +51,8 @@ func getTodos(c *gin.Context) {
 	rows, err := conn.Query(context.Background(), "select Id, Title, Description, RecordedAt, Completed from Todos")
 
 	if err != nil {
-
-		c.IndentedJSON(http.StatusInternalServerError, err)
+		c.IndentedJSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
+		return
 	}
 
 	defer rows.Close()
@@ -59,14 +63,15 @@ func getTodos(c *gin.Context) {
 		err := rows.Scan(&t.Id, &t.Title, &t.Description, &t.RecordedAt, &t.Completed)
 
 		if err != nil {
-			c.IndentedJSON(http.StatusInternalServerError, err)
+			c.IndentedJSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
+			return
 		}
 
 		todos = append(todos, t)
 	}
 
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, err)
+		c.IndentedJSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 		return
 	}
 
@@ -83,7 +88,7 @@ func addTodo(c *gin.Context) {
 	conn, err := pgx.Connect(context.Background(), connectionString)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, err)
+		c.IndentedJSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 		return
 	}
 
@@ -92,16 +97,23 @@ func addTodo(c *gin.Context) {
 	_, err = conn.Exec(context.Background(), "insert into Todos(UserId, Title, Description) values($1, $2, $3)", 1, newTodo.Title, newTodo.Description)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, err)
+		c.IndentedJSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 		return
 	}
 
 	c.Status(http.StatusCreated)
 }
 
+func healthCheck(c *gin.Context) {
+	c.String(http.StatusOK, "OK")
+
+	return
+}
+
 func main() {
 	router := gin.Default()
 
+	router.GET("/diag/health", healthCheck)
 	router.GET("/todos", getTodos)
 	router.POST("/todos", addTodo)
 
