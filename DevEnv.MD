@@ -20,4 +20,5 @@ Necessary extensions:
     - GO: `ext install golang.Go`
     - Docker: `ext install ms-azuretools.vscode-docker`
     - TabOut: `ext install albert.TabOut`
-    
+    - Kubernetes: `ext install ms-kubernetes-tools.vscode-kubernetes-tools`
+
