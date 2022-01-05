@@ -14,9 +14,10 @@ go outline: github.com/ramya-rao-a/go-outline
 # Install VSCode
 
 Download and install: https://code.visualstudio.com/download
-Necessary extensions: 
+Necessary extensions:
+
     - REST Client: `ext install humao.rest-client`
-    - GO: `ext install humao.rest-client`
+    - GO: `ext install golang.Go`
     - Docker: `ext install ms-azuretools.vscode-docker`
-    - TabOut: https://marketplace.visualstudio.com/items?itemName=albert.TabOut
+    - TabOut: `ext install albert.TabOut`
     
