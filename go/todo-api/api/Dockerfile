@@ -1,17 +1,9 @@
-# syntax=docker/dockerfile:1
-
-FROM golang:1.17.4
-
+FROM golang:alpine
+RUN mkdir /app
+COPY . /app
 WORKDIR /app
+RUN go build -o main .
+CMD ["/app/main"]
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
-
-COPY *.go ./
-
-RUN go build -o /docker-gs-ping
-
-EXPOSE 8080
-
-CMD [ "/docker-gs-ping" ]
+RUN apk update && apk add bash
+RUN apk add curl
