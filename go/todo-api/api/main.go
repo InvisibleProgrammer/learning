@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -36,7 +35,8 @@ type TodoDao struct {
 	Completed   bool
 }
 
-var connectionString string = os.Getenv("CONN")
+// var connectionString string = os.Getenv("CONN")
+var connectionString string = "postgres://invisibleprogrammer:invisiblepassword@service/todo-db-service:31228/todo-db"
 
 func getTodos(c *gin.Context) {
 	conn, err := pgx.Connect(context.Background(), connectionString)
@@ -126,8 +126,6 @@ func healthCheck(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, resposne)
-
-	return
 }
 
 func main() {

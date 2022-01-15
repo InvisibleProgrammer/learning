@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-db-config
+data:
+  POSTGRES_DB: todo-db
+  POSTGRES_USER: invisibleprogrammer
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata: 
+  name: todo-db-secret
+data:
+  POSTGRES_PASSWORD: aW52aXNpYmxlcGFzc3dvcmQK
+
+--- 
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: todo-db-pvc
+  labels:
+    app: postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-db
+  template:
+    metadata:
+      labels:
+        app: todo-db  
+    spec:
+      containers:
+      - name: todo-db
+        image: postgres:12.4-alpine
+        ports:
+          - containerPort: 5432
+        envFrom:
+          - secretRef:
+              name: todo-db-secret
+          - configMapRef:
+              name: todo-db-config  
+        volumeMounts:
+        - name: todo-db-storage
+          mountPath: /var/lib/pgsql/data
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: todo-db-storage
+        persistentVolumeClaim:
+          claimName: todo-db-pvc
+      
+--- 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-db-service
+spec:
+  type: NodePort
+  selector:
+    app: todo-db
+  ports:
+  - protocol: TCP
+    port: 5432
+  

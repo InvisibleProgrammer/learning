@@ -16,6 +16,11 @@ spec:
       - name: todo-api-container
         image: todo-api-docker-image/latest
         imagePullPolicy: IfNotPresent
+        envFrom:
+        - secretRef:
+            name: todo-db-secret
+        - configMapRef:
+            name: todo-db-config  
         resources:
           limits:
             memory: "128Mi"
