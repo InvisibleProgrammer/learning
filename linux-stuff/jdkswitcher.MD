@@ -23,7 +23,7 @@ alias java17='unlink /home/invisibleprogrammer/programs/javahome; ln -s /home/li
 
 ```bash
 export JAVA_HOME="/home/invisibleprogrammer/programs/javahome"
-export PATH=$JAVA_HOME:$PATH
+export PATH=$JAVA_HOME:$JAVA_HOME/bing:$PATH
 ```
 
 # use it and do not worry about java versions
