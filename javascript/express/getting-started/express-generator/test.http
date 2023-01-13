@@ -1,0 +1,21 @@
+GET http://localhost:3000/users
+
+###
+POST http://localhost:3000/users
+
+###
+DELETE http://localhost:3000/users
+
+### We expect an error, there is no PUT routing
+PUT http://localhost:3000/users
+
+
+### How to use routing parameters
+GET http://localhost:3000/users/4/books/abc
+
+
+### Test static routing
+GET http://localhost:3000/stylesheets/style.css
+
+
+
