@@ -1,32 +1,50 @@
-# install different java versions
+# install different java versions with maven
 
+
+## installation
 ```bash
 brew install openjdk@8
 brew install openjdk@17
+brew install maven
 ```
 
-# initialize: create symlink to java17
+## remove the extra
+maven pulls openjdk (the default version. It is at this moment, openjdk@20) with itself, as a dependency, please uninstall it so you won't have an extra java executable on `/home/linuxbrew/.linuxbrew/bin`:
 
 ```bash
-ln -s /home/linuxbrew/.linuxbrew/opt/openjdk@8 /home/invisibleprogrammer/programs/javahome
+brew uninstall --ignore-dependencies openjdk
 ```
 
-# add aliases to `.bashrc`
+## initialize: create symlink to java17
 
 ```bash
-alias java8='unlink /home/invisibleprogrammer/programs/javahome; ln -s /home/linuxbrew/.linuxbrew/opt/openjdk@8 /home/invisibleprogrammer/programs/javahome'
-
-alias java17='unlink /home/invisibleprogrammer/programs/javahome; ln -s /home/linuxbrew/.linuxbrew/opt/openjdk@17 /home/invisibleprogrammer/programs/javahome'
+mkdir ~/programs
+mkdir ~/programs/javahome
+ln -s /home/linuxbrew/.linuxbrew/opt/openjdk@8 ~/programs/javahome
 ```
 
-# set **JAVA_HOME** and **PATH** environment variables to use the newly created symlink
+## add aliases to `.bashrc`
 
 ```bash
-export JAVA_HOME="/home/invisibleprogrammer/programs/javahome"
-export PATH=$JAVA_HOME:$JAVA_HOME/bing:$PATH
+function java8() {
+    unlink ~/programs/javahome;
+    ln -s /home/linuxbrew/.linuxbrew/opt/openjdk@8 ~/programs/javahome
+}
+
+function java17() {
+    unlink ~/programs/javahome; 
+    ln -s /home/linuxbrew/.linuxbrew/opt/openjdk@17 ~/programs/javahome
+}
 ```
 
-# use it and do not worry about java versions
+## set **JAVA_HOME** and **PATH** environment variables to use the newly created symlink
+
+```bash
+export JAVA_HOME="~/programs/javahome"
+export PATH=$JAVA_HOME/bin:$PATH
+```
+
+## use it and do not worry about java versions
 
 ```bash
 invisibleprogrammer@desktop:~/work/learning$ java8
