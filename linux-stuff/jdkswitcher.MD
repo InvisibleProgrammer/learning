@@ -4,7 +4,7 @@
 ## installation
 ```bash
 brew install openjdk@8
-brew install openjdk@17
+# Install Azul zulu jdk17 as IntelliJ doesn't recognize openjdk as a JDK...
 brew install maven
 ```
 
@@ -32,8 +32,8 @@ function java8() {
 }
 
 function java17() {
-    unlink ~/programs/javahome; 
-    ln -s /home/linuxbrew/.linuxbrew/opt/openjdk@17 ~/programs/javahome
+    unlink /home/invisibleprogrammer/programs/javahome; 
+    ln -s /home/invisibleprogrammer/programs/azul-zulu-jdk-17 /home/invisibleprogrammer/programs/javahome
 }
 ```
 
